@@ -1,4 +1,43 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -34,9 +73,6 @@
             position: absolute;
             left: 0;
             color: #4A2F0A;
-        }
-        .custom-list {
-            margin-top: 6rem; /* 이력과 연락처 간격 */
         }
         @media (max-width: 640px) {
             .custom-list li {
@@ -94,16 +130,16 @@
             <h2 class="text-2xl font-semibold text-[#4A2F0A] mt-6" style="font-size: 26px;">땅 속의 신비한 명혈(明穴)을 찾는다.</h2>
         </section>
         <section id="bio-contact-section" class="py-10 fade-section">
-            <h2 class="text-2xl font-semibold text-[#4A2F0A] text-center mb-2">이력</h2>
+            <h2 class="text-2xl font-semibold text-[#4A2F0A] text-center mb-4">이력</h2>
             <ul class="custom-list max-w-2xl mx-auto text-gray-700">
                 <li>2010년 10월 20일: 사단법인 한국풍수지리협회 정회원</li>
                 <li>2010년~2013년: 경기대 풍수지리학 과정 이수</li>
                 <li>2013년 1월 25일: 풍수지리사 자격 인증서 취득(경기대)</li>
                 <li>2011년 9월 5일 ~ 2014년 8월 31일: 이천 설봉대학교(풍수지리, 형, 이기, 음·양택) 3년 과정 이수</li>
+                <li>전국장묘개발 연대(실용풍수 원칙으로 진행 중)</li>
                 <li>실용풍수학회 회원</li>
-                <li>전국장묘개발 연대(실용풍수 원칙으로 진행 중)<li>
             </ul>
-            <h2 class="text-2xl font-semibold text-[#4A2F0A] text-center mt-4">연락처</h2>
+            <h2 class="text-2xl font-semibold text-[#4A2F0A] text-center mb-4">연락처</h2>
             <p class="text-gray-700 font-bold text-center" style="font-size: 21px;">
                 전화: <a href="tel:01055708675" class="hover:underline">010-5570-8675</a>
             </p>
@@ -124,7 +160,7 @@
             // 페이지 로드 시 제목 페이드인
             gsap.to("#title-section", { opacity: 1, duration: 1.5, ease: "power2.out" });
 
-            // Intersection Observer로 섹션 감지.
+            // Intersection Observer로 섹션 감지
             const sections = document.querySelectorAll('section');
             const observer = new IntersectionObserver((entries) => {
                 let maxRatio = -1;

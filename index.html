@@ -42,8 +42,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>풍수지리 랜딩 페이지</title>
+    <title>풍수지리</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             background-color: #f5f0e1;
@@ -52,14 +53,38 @@
         .wood-texture {
             background-image: linear-gradient(rgba(139, 69, 19, 0.1), rgba(139, 69, 19, 0.1)), url('https://www.transparenttextures.com/patterns/wood-pattern.png');
         }
+        nav {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        main {
+            font-family: 'Noto Serif KR', serif;
+        }
+        /* 모바일 이력 리스트 스타일 */
+        .custom-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+        .custom-list li::before {
+            content: '．';
+            position: absolute;
+            left: 0;
+            color: #4A2F0A;
+        }
+        @media (max-width: 640px) {
+            .custom-list li {
+                padding-left: 1.2rem;
+                font-size: 0.95rem;
+            }
+        }
     </style>
 </head>
 <body class="wood-texture min-h-screen flex flex-col">
     <!-- 메뉴바 -->
     <nav class="bg-[#8B4513] text-white p-4 fixed w-full top-0 z-10">
-        <div class="container mx-auto flex justify-between items-center">
-            <a href="index.html" class="text-lg font-bold">풍수지리</a>
-            <div class="space-x-4">
+        <div class="container mx-auto relative flex justify-center items-center">
+            <a href="index.html" class="text-lg font-bold absolute left-0">풍수지리</a>
+            <div class="flex space-x-4">
                 <a href="index.html" class="hover:underline">소개글</a>
                 <a href="projects.html" class="hover:underline">작업사례</a>
             </div>
@@ -69,34 +94,39 @@
     <!-- 소개글 페이지 -->
     <main class="container mx-auto mt-20 px-4 flex-grow">
         <section class="text-center py-10">
-            <h1 class="text-3xl md:text-4xl font-bold text-[#4A2F0A] mb-6">소개글</h1>
+            <h1 class="text-3xl md:text-4xl font-bold text-[#4A2F0A] mb-6">명당중에 가장 중요한 것은 혈!</h1>
             <p class="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
-                안녕하세요! 저는 [당신의 이름]입니다. 풍수지리 전문가로, 공간과 사람의 조화를 추구합니다. 
-                자연과 전통을 기반으로 한 현대적인 접근으로 여러분의 삶을 풍요롭게 만들겠습니다.
+                명당 중에 혈, 명혈은 이렇게 찾습니다.<br>
+                '산과 물이 만나 방향을 정하여 명당이 되거나 주변 형상이 좋은 것과, 비슷하다 하여 명당이다.' 란 막연함 보다는 그 누가 뭐라해도 음택과 양택 모두 혈처에, 기맥이 뭉쳐있는 곳을 찾는 것이 가장 중요한 것은 더 이상 논할 바 없듯이, 땅 속을 자세히 알고 수맥과 기맥의 도면 까지도 가능하며, 모든 것을 의뢰인께서 직접 확인하고, 직접 그 자리를 결정할 수 있는 기맥풍수를 소개합니다.
             </p>
+            <h2 class="text-2xl font-semibold text-[#4A2F0A] mt-6">땅 속의 신비한 명혈(明穴)을 찾는다.</h2>
         </section>
 
         <!-- 이력 -->
         <section class="py-10">
             <h2 class="text-2xl font-semibold text-[#4A2F0A] text-center mb-4">이력</h2>
-            <ul class="list-disc list-inside max-w-2xl mx-auto text-gray-700">
-                <li>2020년: 풍수지리 자격증 취득</li>
-                <li>2021년: [프로젝트/경력 예시]</li>
-                <li>2023년: [프로젝트/경력 예시]</li>
+            <ul class="custom-list max-w-2xl mx-auto text-gray-700">
+                <li>2010년 10월 20일: 사단법인 한국풍수지리협회 정회원</li>
+                <li>2010년~2013년: 경기대 풍수지리학 과정 이수</li>
+                <li>2013년 1월 25일: 풍수지리사 자격 인증서 취득(경기대)</li>
+                <li>2011년 9월 5일 ~ 2014년 8월 31일: 이천 설봉대학교(풍수지리, 형, 이기, 음·양택) 3년 과정 이수</li>
+                <li>전국장묘개발 연대(실용풍수 원칙으로 진행 중)</li>
             </ul>
+            <p class="text-lg font-semibold text-[#4A2F0A] text-center mt-4">실용풍수학회 회원</p>
         </section>
 
         <!-- 연락처 -->
         <section class="py-10 text-center">
             <h2 class="text-2xl font-semibold text-[#4A2F0A] mb-4">연락처</h2>
-            <p class="text-gray-700">이메일: contact@pungsujili.com</p>
-            <p class="text-gray-700">전화: [당신의 전화번호]</p>
+            <p class="text-gray-700">
+                전화: <a href="tel:01056608675" class="hover:underline">010-5660-8675</a>
+            </p>
         </section>
     </main>
 
     <!-- 푸터 -->
     <footer class="bg-[#8B4513] text-white text-center p-4">
-        <p>&copy; 2025 풍수지리. All rights reserved.</p>
+        <p>© 2025 풍수지리. All rights reserved.</p>
     </footer>
 </body>
 </html>

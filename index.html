@@ -1,43 +1,4 @@
-<script type="text/javascript">
-        var gk_isXlsx = false;
-        var gk_xlsxFileLookup = {};
-        var gk_fileData = {};
-        function filledCell(cell) {
-          return cell !== '' && cell != null;
-        }
-        function loadFileData(filename) {
-        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
-            try {
-                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
-                var firstSheetName = workbook.SheetNames[0];
-                var worksheet = workbook.Sheets[firstSheetName];
-
-                // Convert sheet to JSON to filter blank rows
-                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
-                // Filter out blank rows (rows where all cells are empty, null, or undefined)
-                var filteredData = jsonData.filter(row => row.some(filledCell));
-
-                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
-                var headerRowIndex = filteredData.findIndex((row, index) =>
-                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
-                );
-                // Fallback
-                if (headerRowIndex === -1 || headerRowIndex > 25) {
-                  headerRowIndex = 0;
-                }
-
-                // Convert filtered JSON back to CSV
-                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
-                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
-                return csv;
-            } catch (e) {
-                console.error(e);
-                return "";
-            }
-        }
-        return gk_fileData[filename] || "";
-        }
-        </script><!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
@@ -45,6 +6,8 @@
     <title>풍수지리</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <style>
         body {
             background-color: #f5f0e1;
@@ -64,6 +27,7 @@
             position: relative;
             padding-left: 1.5rem;
             margin-bottom: 0.5rem;
+            font-weight: bold; /* 이력 텍스트 굵게 */
         }
         .custom-list li::before {
             content: '．';
@@ -76,6 +40,20 @@
                 padding-left: 1.2rem;
                 font-size: 0.95rem;
             }
+            /* 모바일에서 제목 2/5 지점 위치 */
+            #title-section {
+                position: relative;
+                top: 40vh; /* 화면 높이의 40% */
+                transform: translateY(-50%);
+            }
+        }
+        /* 섹션별 페이드아웃 애니메이션 */
+        .fade-section {
+            transition: opacity 1s ease, transform 1s ease;
+        }
+        .fade-out {
+            opacity: 0;
+            transform: translateY(-50px);
         }
     </style>
 </head>
@@ -93,8 +71,10 @@
 
     <!-- 소개글 페이지 -->
     <main class="container mx-auto mt-20 px-4 flex-grow">
-        <section class="text-center py-10">
-            <h1 class="text-3xl md:text-4xl font-bold text-[#4A2F0A] mb-6">명당중에 가장 중요한 것은 혈!</h1>
+        <section id="title-section" class="text-center py-10 fade-section">
+            <h1 class="text-3xl md:text-4xl font-bold text-[#4A2F0A] mb-6">명당에서 중요한 것은 혈!</h1>
+        </section>
+        <section id="main-content" class="text-center py-10 fade-section">
             <p class="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
                 명당 중에 혈, 명혈은 이렇게 찾습니다.<br>
                 '산과 물이 만나 방향을 정하여 명당이 되거나 주변 형상이 좋은 것과, 비슷하다 하여 명당이다.' 란 막연함 보다는 그 누가 뭐라해도 음택과 양택 모두 혈처에, 기맥이 뭉쳐있는 곳을 찾는 것이 가장 중요한 것은 더 이상 논할 바 없듯이, 땅 속을 자세히 알고 수맥과 기맥의 도면 까지도 가능하며, 모든 것을 의뢰인께서 직접 확인하고, 직접 그 자리를 결정할 수 있는 기맥풍수를 소개합니다.
@@ -103,7 +83,7 @@
         </section>
 
         <!-- 이력 -->
-        <section class="py-10">
+        <section id="bio-section" class="py-10 fade-section">
             <h2 class="text-2xl font-semibold text-[#4A2F0A] text-center mb-4">이력</h2>
             <ul class="custom-list max-w-2xl mx-auto text-gray-700">
                 <li>2010년 10월 20일: 사단법인 한국풍수지리협회 정회원</li>
@@ -116,10 +96,10 @@
         </section>
 
         <!-- 연락처 -->
-        <section class="py-10 text-center">
+        <section id="contact-section" class="py-10 text-center fade-section">
             <h2 class="text-2xl font-semibold text-[#4A2F0A] mb-4">연락처</h2>
             <p class="text-gray-700">
-                전화: <a href="tel:01055708675" class="hover:underline">010-5660-8675</a>
+                전화: <a href="tel:01055708675" class="hover:underline">010-5570-8675</a>
             </p>
         </section>
     </main>
@@ -128,5 +108,55 @@
     <footer class="bg-[#8B4513] text-white text-center p-4">
         <p>© 2025 풍수지리. All rights reserved.</p>
     </footer>
+
+    <script>
+        // GSAP과 ScrollTrigger로 스크롤 애니메이션 구현
+        gsap.registerPlugin(ScrollTrigger);
+
+        // 모바일에서만 애니메이션 적용
+        if (window.innerWidth <= 640) {
+            // 제목 섹션: 스크롤 시 위로 이동하며 페이드아웃
+            gsap.to("#title-section", {
+                y: -50,
+                opacity: 0,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: "#title-section",
+                    start: "top 20%",
+                    end: "top 10%",
+                    scrub: true,
+                    toggleActions: "play none none reverse"
+                }
+            });
+
+            // 메인 내용: 스크롤 시 위로 이동하며 페이드아웃
+            gsap.to("#main-content", {
+                y: -50,
+                opacity: 0,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: "#main-content",
+                    start: "top 80%",
+                    end: "top 20%",
+                    scrub: true,
+                    toggleActions: "play none none reverse"
+                }
+            });
+
+            // 이력과 연락처: 부드럽게 나타남
+            gsap.from("#bio-section, #contact-section", {
+                y: 50,
+                opacity: 0,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: "#bio-section",
+                    start: "top 90%",
+                    end: "top 50%",
+                    scrub: true,
+                    toggleActions: "play none none reverse"
+                }
+            });
+        }
+    </script>
 </body>
 </html>

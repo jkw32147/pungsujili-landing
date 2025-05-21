@@ -27,7 +27,8 @@
             position: relative;
             padding-left: 1.5rem;
             margin-bottom: 0.5rem;
-            font-weight: bold; /* 이력 텍스트 굵게 */
+            font-weight: bold;
+            font-size: 18px; /* 기존 16px에서 2px 증가 */
         }
         .custom-list li::before {
             content: '．';
@@ -38,22 +39,40 @@
         @media (max-width: 640px) {
             .custom-list li {
                 padding-left: 1.2rem;
-                font-size: 0.95rem;
+                font-size: 16px; /* 모바일에서 14px에서 2px 증가 */
             }
-            /* 모바일에서 제목 2/5 지점 위치 */
+            /* 모바일에서 제목 위치 */
             #title-section {
-                position: relative;
-                top: 40vh; /* 화면 높이의 40% */
-                transform: translateY(-50%);
+                margin-top: 40vh; /* 화면 높이의 40% */
+            }
+            /* 메인 내용 초기 숨김 */
+            #main-content {
+                opacity: 0;
+                transform: translateY(50px);
             }
         }
-        /* 섹션별 페이드아웃 애니메이션 */
+        /* 섹션별 페이드 애니메이션 */
         .fade-section {
             transition: opacity 1s ease, transform 1s ease;
         }
         .fade-out {
             opacity: 0;
             transform: translateY(-50px);
+        }
+        /* 화살표 스타일 */
+        .scroll-arrow {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #6B7280; /* 회색 */
+            z-index: 10;
+            transition: opacity 0.5s ease;
+        }
+        .scroll-arrow.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -75,11 +94,11 @@
             <h1 class="text-3xl md:text-4xl font-bold text-[#4A2F0A] mb-6">명당에서 중요한 것은 혈!</h1>
         </section>
         <section id="main-content" class="text-center py-10 fade-section">
-            <p class="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto">
+            <p class="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto" style="font-size: 20px;">
                 명당 중에 혈, 명혈은 이렇게 찾습니다.<br>
                 '산과 물이 만나 방향을 정하여 명당이 되거나 주변 형상이 좋은 것과, 비슷하다 하여 명당이다.' 란 막연함 보다는 그 누가 뭐라해도 음택과 양택 모두 혈처에, 기맥이 뭉쳐있는 곳을 찾는 것이 가장 중요한 것은 더 이상 논할 바 없듯이, 땅 속을 자세히 알고 수맥과 기맥의 도면 까지도 가능하며, 모든 것을 의뢰인께서 직접 확인하고, 직접 그 자리를 결정할 수 있는 기맥풍수를 소개합니다.
             </p>
-            <h2 class="text-2xl font-semibold text-[#4A2F0A] mt-6">땅 속의 신비한 명혈(明穴)을 찾는다.</h2>
+            <h2 class="text-2xl font-semibold text-[#4A2F0A] mt-6" style="font-size: 26px;">땅 속의 신비한 명혈(明穴)을 찾는다.</h2>
         </section>
 
         <!-- 이력 -->
@@ -92,13 +111,13 @@
                 <li>2011년 9월 5일 ~ 2014년 8월 31일: 이천 설봉대학교(풍수지리, 형, 이기, 음·양택) 3년 과정 이수</li>
                 <li>전국장묘개발 연대(실용풍수 원칙으로 진행 중)</li>
             </ul>
-            <p class="text-lg font-semibold text-[#4A2F0A] text-center mt-4">실용풍수학회 회원</p>
+            <p class="text-lg font-semibold text-[#4A2F0A] text-center mt-4" style="font-size: 20px;">실용풍수학회 회원</p>
         </section>
 
         <!-- 연락처 -->
         <section id="contact-section" class="py-10 text-center fade-section">
             <h2 class="text-2xl font-semibold text-[#4A2F0A] mb-4">연락처</h2>
-            <p class="text-gray-700">
+            <p class="text-gray-700" style="font-size: 21px;">
                 전화: <a href="tel:01055708675" class="hover:underline">010-5570-8675</a>
             </p>
         </section>
@@ -109,41 +128,61 @@
         <p>© 2025 풍수지리. All rights reserved.</p>
     </footer>
 
+    <!-- 스크롤 화살표 -->
+    <div id="scroll-arrow" class="scroll-arrow">↓</div>
+
     <script>
         // GSAP과 ScrollTrigger로 스크롤 애니메이션 구현
         gsap.registerPlugin(ScrollTrigger);
 
         // 모바일에서만 애니메이션 적용
         if (window.innerWidth <= 640) {
-            // 제목 섹션: 스크롤 시 위로 이동하며 페이드아웃
+            // 초기 상태: 메인 내용 숨김
+            gsap.set("#main-content", { opacity: 0, y: 50 });
+
+            // 제목: 스크롤 시 위로 페이드아웃
             gsap.to("#title-section", {
                 y: -50,
                 opacity: 0,
                 duration: 1,
                 scrollTrigger: {
                     trigger: "#title-section",
-                    start: "top 20%",
+                    start: "top 30%",
                     end: "top 10%",
                     scrub: true,
                     toggleActions: "play none none reverse"
                 }
             });
 
-            // 메인 내용: 스크롤 시 위로 이동하며 페이드아웃
+            // 메인 내용: 스크롤 시 나타남
+            gsap.to("#main-content", {
+                y: 0,
+                opacity: 1,
+                duration: 1,
+                scrollTrigger: {
+                    trigger: "#title-section",
+                    start: "top 20%",
+                    end: "top 0%",
+                    scrub: true,
+                    toggleActions: "play none none reverse"
+                }
+            });
+
+            // 메인 내용: 추가 스크롤 시 위로 페이드아웃
             gsap.to("#main-content", {
                 y: -50,
                 opacity: 0,
                 duration: 1,
                 scrollTrigger: {
                     trigger: "#main-content",
-                    start: "top 80%",
+                    start: "top 70%",
                     end: "top 20%",
                     scrub: true,
                     toggleActions: "play none none reverse"
                 }
             });
 
-            // 이력과 연락처: 부드럽게 나타남
+            // 이력과 연락처: 스크롤 시 나타남
             gsap.from("#bio-section, #contact-section", {
                 y: 50,
                 opacity: 0,
@@ -156,6 +195,25 @@
                     toggleActions: "play none none reverse"
                 }
             });
+
+            // 화살표 표시 제어
+            const arrow = document.getElementById("scroll-arrow");
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        if (entry.target.id === "bio-section" || entry.target.id === "contact-section") {
+                            arrow.classList.add("hidden");
+                        } else {
+                            arrow.classList.remove("hidden");
+                        }
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            observer.observe(document.getElementById("title-section"));
+            observer.observe(document.getElementById("main-content"));
+            observer.observe(document.getElementById("bio-section"));
+            observer.observe(document.getElementById("contact-section"));
         }
     </script>
 </body>

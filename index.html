@@ -124,7 +124,7 @@
             // 페이지 로드 시 제목 페이드인
             gsap.to("#title-section", { opacity: 1, duration: 1.5, ease: "power2.out" });
 
-            // Intersection Observer로 섹션 감지
+            // Intersection Observer로 섹션 감지.
             const sections = document.querySelectorAll('section');
             const observer = new IntersectionObserver((entries) => {
                 let maxRatio = -1;

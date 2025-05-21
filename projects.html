@@ -1,0 +1,97 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>작업사례 - 풍수지리</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f5f0e1;
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .wood-texture {
+            background-image: linear-gradient(rgba(139, 69, 19, 0.1), rgba(139, 69, 19, 0.1)), url('https://www.transparenttextures.com/patterns/wood-pattern.png');
+        }
+    </style>
+</head>
+<body class="wood-texture min-h-screen flex flex-col">
+    <!-- 메뉴바 -->
+    <nav class="bg-[#8B4513] text-white p-4 fixed w-full top-0 z-10">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="index.html" class="text-lg font-bold">풍수지리</a>
+            <div class="space-x-4">
+                <a href="index.html" class="hover:underline">소개글</a>
+                <a href="projects.html" class="hover:underline">작업사례</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 작업사례 페이지 -->
+    <main class="container mx-auto mt-20 px-4 flex-grow">
+        <h1 class="text-3xl md:text-4xl font-bold text-[#4A2F0A] text-center mb-6">작업사례</h1>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- 작업사례 1 -->
+            <div class="bg-white shadow-md rounded-lg p-4">
+                <img src="https://via.placeholder.com/300x200" alt="작업사례 1" class="w-full h-48 object-cover rounded">
+                <div class="mt-4">
+                    <h3 class="text-lg font-semibold text-[#4A2F0A]">작업사례 1</h3>
+                    <p class="text-gray-700">[여기에 작업 설명을 추가하세요. 예: 주거 공간 풍수 컨설팅, 2023년 완료.]</p>
+                </div>
+            </div>
+            <!-- 작업사례 2 -->
+            <div class="bg-white shadow-md rounded-lg p-4">
+                <img src="https://via.placeholder.com/300x200" alt="작업사례 2" class="w-full h-48 object-cover rounded">
+                <div class="mt-4">
+                    <h3 class="text-lg font-semibold text-[#4A2F0A]">작업사례 2</h3>
+                    <p class="text-gray-700">[여기에 작업 설명을 추가하세요.]</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 푸터 -->
+    <footer class="bg-[#8B4513] text-white text-center p-4">
+        <p>&copy; 2025 풍수지리. All rights reserved.</p>
+    </footer>
+</body>
+</html>

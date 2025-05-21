@@ -28,7 +28,7 @@
             padding-left: 1.5rem;
             margin-bottom: 0.5rem;
             font-weight: bold;
-            font-size: 18px; /* 기존 16px에서 2px 증가 */
+            font-size: 18px;
         }
         .custom-list li::before {
             content: '．';
@@ -39,16 +39,20 @@
         @media (max-width: 640px) {
             .custom-list li {
                 padding-left: 1.2rem;
-                font-size: 16px; /* 모바일에서 14px에서 2px 증가 */
+                font-size: 16px;
             }
             /* 모바일에서 제목 위치 */
             #title-section {
-                margin-top: 40vh; /* 화면 높이의 40% */
+                margin-top: 40vh;
             }
             /* 메인 내용 초기 숨김 */
             #main-content {
                 opacity: 0;
                 transform: translateY(50px);
+            }
+            /* 섹션 간 공백 추가 */
+            #title-section, #main-content, #bio-section {
+                padding-bottom: 10vh;
             }
         }
         /* 섹션별 페이드 애니메이션 */
@@ -66,7 +70,7 @@
             left: 50%;
             transform: translateX(-50%);
             font-size: 24px;
-            color: #6B7280; /* 회색 */
+            color: #6B7280;
             z-index: 10;
             transition: opacity 0.5s ease;
         }
@@ -117,8 +121,8 @@
         <!-- 연락처 -->
         <section id="contact-section" class="py-10 text-center fade-section">
             <h2 class="text-2xl font-semibold text-[#4A2F0A] mb-4">연락처</h2>
-            <p class="text-gray-700" style="font-size: 21px;">
-                전화: <a href="tel:01055708675" class="hover:underline">010-5570-8675</a>
+            <p class="text-gray-700 font-bold" style="font-size: 21px;">
+             <a href="tel:01055708675" class="hover:underline">010-5570-8675</a>
             </p>
         </section>
     </main>
@@ -135,7 +139,15 @@
         // GSAP과 ScrollTrigger로 스크롤 애니메이션 구현
         gsap.registerPlugin(ScrollTrigger);
 
-        // 모바일에서만 애니메이션 적용
+        // 초기 로드 시 제목 애니메이션
+        gsap.from("#title-section", {
+            opacity: 0,
+            y: 50,
+            duration: 1,
+            ease: "power2.out"
+        });
+
+        // 모바일에서만 스크롤 애니메이션 적용
         if (window.innerWidth <= 640) {
             // 초기 상태: 메인 내용 숨김
             gsap.set("#main-content", { opacity: 0, y: 50 });
@@ -147,9 +159,9 @@
                 duration: 1,
                 scrollTrigger: {
                     trigger: "#title-section",
-                    start: "top 30%",
+                    start: "top 40%",
                     end: "top 10%",
-                    scrub: true,
+                    scrub: 0.5,
                     toggleActions: "play none none reverse"
                 }
             });
@@ -161,9 +173,9 @@
                 duration: 1,
                 scrollTrigger: {
                     trigger: "#title-section",
-                    start: "top 20%",
+                    start: "top 30%",
                     end: "top 0%",
-                    scrub: true,
+                    scrub: 0.5,
                     toggleActions: "play none none reverse"
                 }
             });
@@ -175,9 +187,9 @@
                 duration: 1,
                 scrollTrigger: {
                     trigger: "#main-content",
-                    start: "top 70%",
-                    end: "top 20%",
-                    scrub: true,
+                    start: "top 80%",
+                    end: "top 30%",
+                    scrub: 0.5,
                     toggleActions: "play none none reverse"
                 }
             });
@@ -190,8 +202,8 @@
                 scrollTrigger: {
                     trigger: "#bio-section",
                     start: "top 90%",
-                    end: "top 50%",
-                    scrub: true,
+                    end: "top 60%",
+                    scrub: 0.5,
                     toggleActions: "play none none reverse"
                 }
             });

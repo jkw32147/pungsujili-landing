@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <style>
         body {
             background-color: #f5f0e1;
@@ -45,38 +44,38 @@
             #title-section {
                 margin-top: 40vh;
             }
-            /* 메인 내용 초기 숨김 */
-            #main-content {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            /* 섹션 간 공백 추가 */
+            /* 섹션 간 공백 */
             #title-section, #main-content, #bio-section {
                 padding-bottom: 10vh;
             }
+            /* 섹션 초기 숨김 */
+            #main-content, #bio-section, #contact-section {
+                opacity: 0;
+            }
         }
-        /* 섹션별 페이드 애니메이션 */
+        /* 섹션 페이드 애니메이션 */
         .fade-section {
-            transition: opacity 1s ease, transform 1s ease;
-        }
-        .fade-out {
-            opacity: 0;
-            transform: translateY(-50px);
+            transition: opacity 0.8s ease;
         }
         /* 화살표 스타일 */
-        .scroll-arrow {
+        .arrow {
             position: fixed;
-            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             font-size: 24px;
             color: #6B7280;
             z-index: 10;
-            transition: opacity 0.5s ease;
-        }
-        .scroll-arrow.hidden {
             opacity: 0;
-            pointer-events: none;
+            transition: opacity 0.8s ease;
+        }
+        .arrow.up {
+            top: 20px;
+        }
+        .arrow.down {
+            bottom: 20px;
+        }
+        .arrow.visible {
+            opacity: 1;
         }
     </style>
 </head>
@@ -122,7 +121,7 @@
         <section id="contact-section" class="py-10 text-center fade-section">
             <h2 class="text-2xl font-semibold text-[#4A2F0A] mb-4">연락처</h2>
             <p class="text-gray-700 font-bold" style="font-size: 21px;">
-             <a href="tel:01055708675" class="hover:underline">010-5570-8675</a>
+                전화: <a href="tel:01055708675" class="hover:underline">010-5570-8675</a>
             </p>
         </section>
     </main>
@@ -132,100 +131,67 @@
         <p>© 2025 풍수지리. All rights reserved.</p>
     </footer>
 
-    <!-- 스크롤 화살표 -->
-    <div id="scroll-arrow" class="scroll-arrow">↓</div>
+    <!-- 화살표 -->
+    <div id="up-arrow" class="arrow up">↑</div>
+    <div id="down-arrow" class="arrow down">↓</div>
 
     <script>
-        // GSAP과 ScrollTrigger로 스크롤 애니메이션 구현
-        gsap.registerPlugin(ScrollTrigger);
-
-        // 초기 로드 시 제목 애니메이션
-        gsap.from("#title-section", {
-            opacity: 0,
-            y: 50,
-            duration: 1,
-            ease: "power2.out"
-        });
-
-        // 모바일에서만 스크롤 애니메이션 적용
+        // GSAP으로 애니메이션 구현
         if (window.innerWidth <= 640) {
-            // 초기 상태: 메인 내용 숨김
-            gsap.set("#main-content", { opacity: 0, y: 50 });
+            // 초기 상태: 제목만 표시
+            gsap.set("#title-section", { opacity: 0 });
+            gsap.set("#main-content, #bio-section, #contact-section", { opacity: 0 });
+            gsap.set("#up-arrow, #down-arrow", { opacity: 0 });
 
-            // 제목: 스크롤 시 위로 페이드아웃
-            gsap.to("#title-section", {
-                y: -50,
-                opacity: 0,
-                duration: 1,
-                scrollTrigger: {
-                    trigger: "#title-section",
-                    start: "top 40%",
-                    end: "top 10%",
-                    scrub: 0.5,
-                    toggleActions: "play none none reverse"
-                }
-            });
+            // 페이지 로드 시 제목과 하단 화살표 페이드인
+            gsap.to("#title-section", { opacity: 1, duration: 0.8, ease: "power2.out" });
+            gsap.to("#down-arrow", { opacity: 1, duration: 0.8, ease: "power2.out", delay: 0.2 });
 
-            // 메인 내용: 스크롤 시 나타남
-            gsap.to("#main-content", {
-                y: 0,
-                opacity: 1,
-                duration: 1,
-                scrollTrigger: {
-                    trigger: "#title-section",
-                    start: "top 30%",
-                    end: "top 0%",
-                    scrub: 0.5,
-                    toggleActions: "play none none reverse"
-                }
-            });
+            // Intersection Observer로 섹션 감지
+            const sections = [
+                { id: "title-section", up: false, down: true },
+                { id: "main-content", up: true, down: true },
+                { id: "bio-section", up: true, down: false },
+                { id: "contact-section", up: true, down: false }
+            ];
 
-            // 메인 내용: 추가 스크롤 시 위로 페이드아웃
-            gsap.to("#main-content", {
-                y: -50,
-                opacity: 0,
-                duration: 1,
-                scrollTrigger: {
-                    trigger: "#main-content",
-                    start: "top 80%",
-                    end: "top 30%",
-                    scrub: 0.5,
-                    toggleActions: "play none none reverse"
-                }
-            });
-
-            // 이력과 연락처: 스크롤 시 나타남
-            gsap.from("#bio-section, #contact-section", {
-                y: 50,
-                opacity: 0,
-                duration: 1,
-                scrollTrigger: {
-                    trigger: "#bio-section",
-                    start: "top 90%",
-                    end: "top 60%",
-                    scrub: 0.5,
-                    toggleActions: "play none none reverse"
-                }
-            });
-
-            // 화살표 표시 제어
-            const arrow = document.getElementById("scroll-arrow");
             const observer = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        if (entry.target.id === "bio-section" || entry.target.id === "contact-section") {
-                            arrow.classList.add("hidden");
-                        } else {
-                            arrow.classList.remove("hidden");
-                        }
+                        const section = sections.find(s => s.id === entry.target.id);
+                        // 섹션 페이드인
+                        gsap.to(`#${entry.target.id}`, { opacity: 1, duration: 0.8, ease: "power2.out" });
+                        // 화살표 표시
+                        gsap.to("#up-arrow", { opacity: section.up ? 1 : 0, duration: 0.8, ease: "power2.out" });
+                        gsap.to("#down-arrow", { opacity: section.down ? 1 : 0, duration: 0.8, ease: "power2.out" });
+                        // 다른 섹션 페이드아웃
+                        sections.forEach(s => {
+                            if (s.id !== entry.target.id) {
+                                gsap.to(`#${s.id}`, { opacity: 0, duration: 0.8, ease: "power2.out" });
+                            }
+                        });
                     }
                 });
-            }, { threshold: 0.1 });
+            }, { threshold: 0.5 }); // 섹션의 50%가 보일 때 트리거
 
-            observer.observe(document.getElementById("title-section"));
-            observer.observe(document.getElementById("main-content"));
-            observer.observe(document.getElementById("bio-section"));
-            observer.observe(document.getElementById("contact-section"));
+            // 모든 섹션 관찰
+            sections.forEach(section => {
+                observer.observe(document.getElementById(section.id));
+            });
+
+            // 스크롤 이벤트: 약간의 스크롤로 즉시 메인 내용 표시
+            let lastScrollTop = 0;
+            window.addEventListener("scroll", () => {
+                const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                if (scrollTop > lastScrollTop && scrollTop > 10) { // 아래로 약간 스크롤
+                    observer.unobserve(document.getElementById("title-section"));
+                    gsap.to("#title-section", { opacity: 0, duration: 0.8, ease: "power2.out" });
+                    gsap.to("#main-content", { opacity: 1, duration: 0.8, ease: "power2.out" });
+                    gsap.to("#up-arrow", { opacity: 1, duration: 0.8, ease: "power2.out" });
+                    gsap.to("#down-arrow", { opacity: 1, duration: 0.8, ease: "power2.out" });
+                }
+                lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+            });
         }
     </script>
 </body>
